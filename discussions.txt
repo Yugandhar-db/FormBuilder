@@ -1,0 +1,6 @@
+
+3. What is DidMount exxactly means?
+4. What is  divRef doing?
+
+
+

@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "key": "frist_one",
+      "value": "First One"
+    },
+    {
+      "id": 2,
+      "key": "second_one",
+      "value": "Second One"
+    },
+    {
+      "id": 3,
+      "key": "third_one",
+      "value": "Third One"
+    },
+    {
+      "id": 4,
+      "key": "four_one",
+      "value": "Four One"
+    }
+  ]
+}
