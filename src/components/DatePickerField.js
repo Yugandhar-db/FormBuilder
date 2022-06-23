@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Alert } from "@mui/material";
+import { Alert, FormControl } from "@mui/material";
 
 export default function DateField({ conf }) {
   const required = conf.required;
@@ -37,12 +37,9 @@ export default function DateField({ conf }) {
         onError={handleDateError}
         onChange={changeHanlder}
         renderInput={(params) => (
-          <TextField
-            required={required}
-            style={{ paddingTop: "10px" }}
-            {...params}
-            fullWidth
-          />
+          <FormControl margin="dense" fullWidth>
+            <TextField required={required} {...params} fullWidth />
+          </FormControl>
         )}
       />
       {/* if  error in date input, display an Alert */}

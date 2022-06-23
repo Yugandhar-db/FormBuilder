@@ -7,7 +7,7 @@ const formData = [
     maxLength: 80,
     mixLength: 3,
     field: "TextField",
-    type: "text",
+
     method: null,
     url: null,
     required: false,
@@ -21,7 +21,7 @@ const formData = [
     maxLength: 80,
     mixLength: 3,
     field: "TextField",
-    type: "text",
+
     method: null,
     required: true,
     url: null,
@@ -35,7 +35,7 @@ const formData = [
     maxLength: 80,
     mixLength: 3,
     field: "Select",
-    type: "text",
+
     required: true,
     method: "get",
     additionalConfig: { required: true },
@@ -50,7 +50,7 @@ const formData = [
     maxLength: 80,
     mixLength: 3,
     field: "Select",
-    type: "text",
+
     method: null,
     url: null,
     additionalConfig: {},
@@ -101,7 +101,7 @@ const formData = [
     mixLength: 3,
     field: "Date",
     required: false,
-    type: "text",
+
     method: null,
     url: null,
     additionalConfig: {},
@@ -115,7 +115,7 @@ const formData = [
     mixLength: 3,
     field: "Date",
     required: true,
-    type: "text",
+
     method: null,
     url: null,
     additionalConfig: {},
@@ -129,7 +129,7 @@ const formData = [
     mixLength: 3,
     field: "CheckBox",
     required: true,
-    type: "text",
+
     method: null,
     url: null,
     additionalConfig: {},

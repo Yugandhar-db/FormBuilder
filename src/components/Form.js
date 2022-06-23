@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import Editor from "@monaco-editor/react";
 import { Alert } from "@mui/material";
 import { getFields, getFormFields } from "../utils";
+import Typography from "@mui/material/Typography";
+import InputModel from "./InputModal";
 
 const Form = ({ formData }) => {
   const divRef = useRef(1);
@@ -12,6 +14,10 @@ const Form = ({ formData }) => {
   const [marks, setMarks] = useState([]);
   const editorRef = useRef(null);
   const [formError, setFormError] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
@@ -135,7 +141,17 @@ const Form = ({ formData }) => {
           >
             Submit
           </Button>
+          <Button
+            style={{ background: "#3928d6" }}
+            variant="contained"
+            margin="normal"
+            onClick={handleOpen}
+          >
+            Add Field
+          </Button>
         </Box>
+
+        <InputModel openState={open} close={handleClose} />
       </form>
 
       {/* <div ref={divRef}>
