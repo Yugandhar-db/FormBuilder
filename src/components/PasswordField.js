@@ -19,7 +19,6 @@ const Password = ({ conf }) => {
         {...conf}
         fullWidth
         type={values.showPassword ? "text" : "password"}
-        label="Password"
         InputProps={{
           endAdornment: (
             <InputAdornment

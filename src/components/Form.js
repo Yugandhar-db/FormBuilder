@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import { Box, Button, Alert } from "@mui/material";
 import Editor from "@monaco-editor/react";
-import { Alert } from "@mui/material";
+
 import { getFields, getFormFields } from "../utils";
-import Typography from "@mui/material/Typography";
 import InputModel from "./InputModal";
 
 const Form = ({ formData }) => {
   const divRef = useRef(1);
-  const [sFdata, setSFData] = useState([]);
+  const [sFdata, setSFData] = useState(formData);
   const [fields, setFields] = useState(getFormFields(formData));
   const [marks, setMarks] = useState([]);
   const editorRef = useRef(null);
@@ -23,11 +21,41 @@ const Form = ({ formData }) => {
     editorRef.current = editor;
   }
 
+  const addFieldHandler = (jsonvalues) => {
+    // adds an additional field to form
+    const obj = {
+      id: sFdata.length + 1,
+      name: jsonvalues.display_name,
+      label: jsonvalues.label,
+      value: "string",
+      maxLength: 80,
+      mixLength: 3,
+      field: jsonvalues.type,
+      type: "text",
+      method: jsonvalues.method,
+      url: jsonvalues?.url,
+      required: jsonvalues.required,
+      menuItems: jsonvalues?.menuItems,
+    };
+
+    const fvalue = obj.field === "Date" ? null : "";
+    setFields((prev) => ({
+      ...prev,
+      [`${obj.label}`]: fvalue,
+    }));
+
+    setSFData((prev) => [...prev, obj]);
+    divRef.current = divRef.current + 1;
+
+    // setFields({...fields,{`${obj.label}`:fValue}} );
+
+    // console.log("editorRef.current", editorRef.current);
+    // editorRef.current._domElement.innerText = JSON.stringify(sFdata);
+  };
+
   const handleChange = (event) => {
     // updates the state values on change of any field value
     try {
-      // if event exits
-
       // update the states
       const { name, value, type, checked } = event.target;
       if (type === "checkbox") {
@@ -60,6 +88,7 @@ const Form = ({ formData }) => {
 
     if (!formError) {
       console.log("fields===>", fields);
+      // console.log("sfData===>", sFdata);
     }
   };
 
@@ -76,12 +105,12 @@ const Form = ({ formData }) => {
   };
 
   useEffect(() => {
-    setSFData(() => [...formData]);
+    setSFData(() => [...sFdata]);
+
     const getDropDownValues = async () => {
-      const filterFormData = formData.filter(
+      const filterFormData = sFdata.filter(
         (e) => e.url && e.method === "get" && e.field === "Select"
       );
-
       for (const element of filterFormData) {
         const list = await fetch(element.url).then((resp) => resp.json());
         setSFData((prev) =>
@@ -96,7 +125,7 @@ const Form = ({ formData }) => {
     };
 
     getDropDownValues();
-  }, []);
+  }, [sFdata]);
 
   return (
     <div
@@ -142,7 +171,7 @@ const Form = ({ formData }) => {
             Submit
           </Button>
           <Button
-            style={{ background: "#3928d6" }}
+            style={{ background: "#3928d6", marginLeft: "0.1rem" }}
             variant="contained"
             margin="normal"
             onClick={handleOpen}
@@ -151,10 +180,14 @@ const Form = ({ formData }) => {
           </Button>
         </Box>
 
-        <InputModel openState={open} close={handleClose} />
+        <InputModel
+          openState={open}
+          close={handleClose}
+          add={addFieldHandler}
+        />
       </form>
 
-      {/* <div ref={divRef}>
+      <div ref={divRef}>
         <Editor
           theme="vs-dark"
           height="80vh"
@@ -163,7 +196,7 @@ const Form = ({ formData }) => {
           value={JSON.stringify(sFdata)}
           onMount={handleEditorDidMount}
         />
-      </div> */}
+      </div>
     </div>
   );
 };

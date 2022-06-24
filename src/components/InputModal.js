@@ -1,68 +1,110 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
+import React, { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import Modal from "@mui/material/Modal";
-import { FormControl, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  RadioGroup,
+  Modal,
+  Radio,
+  InputLabel,
+  FormControl,
+  TextField,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  FormLabel,
+  Alert,
+} from "@mui/material";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import style from "../styles/InputModal";
+import KeyValue from "./KeyValue";
 
-export default function InputModal({ openState, close }) {
+export default function InputModal({ openState, close, add }) {
+  const [options, setOptions] = useState([
+    { id: 1, key: "", value: "" },
+    { id: 2, key: "", value: "" },
+  ]);
+  const [count, setCount] = useState(2);
+  const [radioValue, setRadioValue] = useState("url");
   const [fieldValue, setFieldValue] = useState({
     display_name: "",
     label: "",
     type: "",
     method: "",
     url: "",
+    required: false,
+    additionalConfig: {},
   });
 
   const selectItems = [
-    { value: "first" },
-    { value: "second" },
-    { value: "third" },
+    { value: "Date" },
+    { value: "Select" },
+    { value: "TextField" },
+    { value: "CheckBox" },
+    { value: "Password" },
   ];
 
-  const handleDNameChange = (event) => {
-    setFieldValue((prev) => ({
-      ...prev,
-      ["display_name"]: event.target.value,
-    }));
+  const handleFieldChange = (event) => {
+    const { type, name, value, checked } = event.target;
+    console.log(type, value, checked, name);
+    if (type === "checkbox") {
+      setFieldValue((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+    } else {
+      setFieldValue((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
-  const handleLabelChange = (event) => {
-    setFieldValue((prev) => ({
-      ...prev,
-      ["label"]: event.target.value,
-    }));
+
+  const handleRadioChange = (event) => {
+    setRadioValue(event.target.value);
   };
-  const handleTypeChange = (event) => {
-    setFieldValue((prev) => ({ ...prev, ["type"]: event.target.value }));
+
+  const handleDeleteField = (id) => {
+    const updated = [];
+    options.map((e) => {
+      if (e.id !== id) {
+        updated.push(e);
+      }
+    });
+    setOptions(updated);
   };
-  const handleMethodChange = (event) => {
-    setFieldValue((prev) => ({ ...prev, ["method"]: event.target.value }));
+
+  const handleAddField = ({ id }) => {
+    setCount(count + 1);
+    setOptions(() => [
+      ...options,
+      { ["id"]: count + 1, ["key"]: "", ["value"]: "" },
+    ]);
   };
-  const handleURLChange = (event) => {
-    setFieldValue((prev) => ({ ...prev, ["url"]: event.target.value }));
+
+  const handleOptionEdit = ({ type, id, value }) => {
+    setOptions((prev) =>
+      prev.map((e) => {
+        if (e.id === id) {
+          e[type] = value;
+        }
+        return e;
+      })
+    );
   };
+
+  useEffect(() => {
+    setFieldValue({ ...fieldValue, menuItems: options });
+  }, [options]);
 
   const handleSubmit = () => {
-    console.log(JSON.stringify(fieldValue));
-
+    console.log(fieldValue);
+    add(fieldValue);
     close();
   };
+
   return (
     <div>
       <Modal
@@ -82,21 +124,22 @@ export default function InputModal({ openState, close }) {
             }}
           />
           <h2>Choose Field Type</h2>
-
           <FormControl margin="dense" fullWidth>
             <TextField
-              onChange={handleDNameChange}
+              onChange={handleFieldChange}
               value={fieldValue.display_name}
               label="Display Name"
+              name="display_name"
               required
               fullWidth
             />
           </FormControl>
           <FormControl margin="dense" fullWidth>
             <TextField
-              onChange={handleLabelChange}
+              onChange={handleFieldChange}
               value={fieldValue.label}
               label="Label"
+              name="label"
               required
               fullWidth
             />
@@ -106,7 +149,8 @@ export default function InputModal({ openState, close }) {
             <Select
               labelId={`select-label-`}
               value={fieldValue.type}
-              onChange={handleTypeChange}
+              onChange={handleFieldChange}
+              name="type"
             >
               {selectItems?.map((item, id) => {
                 return (
@@ -117,31 +161,105 @@ export default function InputModal({ openState, close }) {
               })}
             </Select>
           </FormControl>
-          <FormControl margin="dense" fullWidth>
-            <InputLabel id={`select-label-1`}>Select Method</InputLabel>
-            <Select
-              labelId={`select-label-1`}
-              value={fieldValue.method}
-              onChange={handleMethodChange}
-            >
-              {selectItems?.map((item, id) => {
-                return (
-                  <MenuItem key={id} value={item.value}>
-                    {item.value}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-          <FormControl margin="dense" fullWidth>
-            <TextField
-              onChange={handleURLChange}
-              value={fieldValue.url}
-              label="URL"
-              required
-              fullWidth
+          {fieldValue.type === "Select" && (
+            <>
+              <FormControl margin="dense">
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Select Type of Entry{" "}
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue={radioValue}
+                  value={radioValue}
+                  onChange={handleRadioChange}
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="url"
+                    control={<Radio size="small" />}
+                    label="URL"
+                  />
+                  <FormControlLabel
+                    value="manual"
+                    control={<Radio size="small" />}
+                    label="Manual"
+                  />
+                </RadioGroup>
+                {options.length < 2 && radioValue === "manual" && (
+                  <Alert severity="error">
+                    There must be atleast two options
+                  </Alert>
+                )}
+              </FormControl>
+              {radioValue === "url" ? (
+                <>
+                  <FormControl margin="dense" fullWidth>
+                    <InputLabel id={`select-label-1`}>Select Method</InputLabel>
+                    <Select
+                      labelId={`select-label-1`}
+                      value={fieldValue.method}
+                      onChange={handleFieldChange}
+                      name="method"
+                    >
+                      {selectItems?.map((item, id) => {
+                        return (
+                          <MenuItem key={id} value={`get${id}`}>
+                            {`get${id}`}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl margin="dense" fullWidth>
+                    <TextField
+                      onChange={handleFieldChange}
+                      value={fieldValue.url}
+                      label="URL"
+                      name="url"
+                      required
+                      fullWidth
+                    />
+                  </FormControl>
+                </>
+              ) : (
+                <div style={{ display: "table", verticalAlign: "middle" }}>
+                  {options.map((e) => {
+                    return (
+                      <KeyValue
+                        data={e}
+                        key={e.id}
+                        id={e.id}
+                        option={options.filter((item) => item.id === e.id)}
+                        handleOptionEdit={handleOptionEdit}
+                        handleDeleteField={handleDeleteField}
+                      />
+                    );
+                  })}
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={handleAddField}
+                  >
+                    Add Option
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={fieldValue.required}
+                  onChange={handleFieldChange}
+                  name="required"
+                />
+              }
+              label="Required"
             />
-          </FormControl>
+          </FormGroup>
           <Button variant="contained" margin="dense" onClick={handleSubmit}>
             Submit
           </Button>
