@@ -18,6 +18,7 @@ import {
   Alert,
 } from "@mui/material";
 
+// importing styles and KeyValue component
 import style from "../styles/InputModal";
 import KeyValue from "./KeyValue";
 
@@ -77,6 +78,7 @@ export default function InputModal({ openState, close, add }) {
   };
 
   const handleAddField = ({ id }) => {
+    // updating count value and options object
     setCount(count + 1);
     setOptions(() => [
       ...options,
@@ -85,6 +87,7 @@ export default function InputModal({ openState, close, add }) {
   };
 
   const handleOptionEdit = ({ type, id, value }) => {
+    // updating the options object value by filtering with their id value
     setOptions((prev) =>
       prev.map((e) => {
         if (e.id === id) {
@@ -96,6 +99,7 @@ export default function InputModal({ openState, close, add }) {
   };
 
   useEffect(() => {
+    // updaing the key value insertions
     setFieldValue({ ...fieldValue, menuItems: options });
   }, [options]);
 

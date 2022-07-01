@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Button, Alert } from "@mui/material";
 import Editor from "@monaco-editor/react";
 
+import CloseIcon from "@mui/icons-material/Close";
 import { getFields, getFormFields } from "../utils";
 import InputModel from "./InputModal";
 
@@ -21,6 +22,23 @@ const Form = ({ formData }) => {
     editorRef.current = editor;
   }
 
+  const removeFieldHandler = (e) => {
+    setSFData((prev) => prev.filter((item) => item.id !== e.id));
+    // const updatedsFData = [];
+    // sFdata.map((item) => {
+    //   if (e.id !== item.id) {
+    //     updatedsFData.push(item);
+    //   }
+    // });
+    // setSFData(updatedsFData);
+
+    setFields((prev) => {
+      const updated = fields;
+      delete updated[e.label];
+      return updated;
+    });
+  };
+
   const addFieldHandler = (jsonvalues) => {
     // adds an additional field to form
     const obj = {
@@ -38,6 +56,7 @@ const Form = ({ formData }) => {
       menuItems: jsonvalues?.menuItems,
     };
 
+    // adding a key value pair fields state
     const fvalue = obj.field === "Date" ? null : "";
     setFields((prev) => ({
       ...prev,
@@ -46,11 +65,6 @@ const Form = ({ formData }) => {
 
     setSFData((prev) => [...prev, obj]);
     divRef.current = divRef.current + 1;
-
-    // setFields({...fields,{`${obj.label}`:fValue}} );
-
-    // console.log("editorRef.current", editorRef.current);
-    // editorRef.current._domElement.innerText = JSON.stringify(sFdata);
   };
 
   const handleChange = (event) => {
@@ -105,6 +119,8 @@ const Form = ({ formData }) => {
   };
 
   useEffect(() => {
+    // updates the page on adding a new field
+
     setSFData(() => [...sFdata]);
 
     const getDropDownValues = async () => {
@@ -125,7 +141,7 @@ const Form = ({ formData }) => {
     };
 
     getDropDownValues();
-  }, [sFdata]);
+  }, []);
 
   return (
     <div
@@ -141,21 +157,45 @@ const Form = ({ formData }) => {
           {sFdata
             ?.filter((d) => d.id && d.label && d.name)
             .map((e) => {
-              return getFields({
-                data: e,
-                inputConfig: {
-                  ...e?.additionalConfig,
-                  key: e?.id,
-                  id: e?.label,
-                  label: e?.name,
-                  name: e?.label,
-                  value: fields[e?.label],
-                  onChange: (eve) => {
-                    handleChange(eve);
-                  },
-                  required: e.required,
-                },
-              });
+              return (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                  key={e.id}
+                >
+                  {getFields({
+                    data: e,
+                    inputConfig: {
+                      ...e?.additionalConfig,
+                      key: e?.id,
+                      id: e?.label,
+                      label: e?.name,
+                      name: e?.label,
+                      value: fields[e?.label],
+                      onChange: (eve) => {
+                        handleChange(eve);
+                      },
+                      required: e.required,
+                    },
+                  })}{" "}
+                  <CloseIcon
+                    style={{
+                      cursor: "pointer",
+                      marginLeft: "1rem",
+                      border: "solid",
+                      borderRadius: "5px",
+                      padding: "0.5rem",
+                      borderWidth: "1.5px",
+                    }}
+                    onClick={() => {
+                      removeFieldHandler(e);
+                    }}
+                  />
+                </div>
+              );
             })}
 
           {formError && (
@@ -163,7 +203,7 @@ const Form = ({ formData }) => {
           )}
 
           <Button
-            style={{ background: "#3928d6" }}
+            style={{ background: "#3928d6", marginTop: "0.5rem" }}
             onClick={handleSubmit}
             variant="contained"
             margin="normal"
@@ -171,7 +211,11 @@ const Form = ({ formData }) => {
             Submit
           </Button>
           <Button
-            style={{ background: "#3928d6", marginLeft: "0.1rem" }}
+            style={{
+              background: "#3928d6",
+              marginLeft: "0.1rem",
+              marginTop: "0.5rem",
+            }}
             variant="contained"
             margin="normal"
             onClick={handleOpen}
